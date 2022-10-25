@@ -1,47 +1,50 @@
 package utilies;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
+import io.github.bonigarcia.wdm.managers.ChromeDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.testng.annotations.AfterTest;
+
 
 public class BasicWebDriver {
 
-
     // Her thread e özel driver olacak ve static olduğu için o thread deki bütün classlaar aynı DRİVER ı kullanmış olacak.
-    private static ThreadLocal<WebDriver> threadDriver = new ThreadLocal<>();// WebDriver1  , WebDriver 2
-    public static ThreadLocal<String> threadBrowserName = new ThreadLocal<>();// chrome , firefox
+    private static ThreadLocal<WebDriver> driver = new ThreadLocal<>();//WebDriver1  , WebDriver 2
+    public static ThreadLocal<String> browserName = new ThreadLocal<>();// chrome , firefox
 
     public static WebDriver getDriver() {
-        if (threadBrowserName.get() == null) {
-            threadBrowserName.set("chrome");
+        if (browserName.get() == null) {
+            browserName.set("chrome".toLowerCase());
         }
 
-        if (threadDriver.get() == null) {
-            switch (threadBrowserName.get()) {
+
+        if (driver.get() == null) {
+            switch (browserName.get()) {
                 case "chrome":
                     WebDriverManager.chromedriver().setup();
-                    threadDriver.set(new ChromeDriver());
+                    driver.set(new ChromeDriver());
                     break;
 
-                case "firefox":
+                case "Firefox":
                     WebDriverManager.firefoxdriver().setup();
-                    threadDriver.set(new FirefoxDriver());
+                    driver.set(new FirefoxDriver());
                     break;
             }
 
         }
-        return threadDriver.get();
+        return driver.get();
     }
+    @AfterTest
+    public static void quitDriver() {
+//        if (driver.get() != null) {
+//            driver.get().quit();
+//            WebDriver webDriver = driver.get();
+//            webDriver = null;
+//            driver.set(webDriver);
+//        }
 
-    public static void driverQuit() {
-        if (threadDriver.get() != null) {
-            threadDriver.get().quit();
-            WebDriver webDriver = threadDriver.get();
-            webDriver = null;
-            threadDriver.set(webDriver);
-        }
-
+driver.get().quit();
     }
-
 }
